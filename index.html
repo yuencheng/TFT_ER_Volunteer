@@ -282,7 +282,7 @@
 
                 <!-- ══ LINE ══ -->
                 <div id="tab-content-line" class="tab-content hidden">
-                    <p class="text-xs font-bold text-tft-green tracking-widest uppercase mb-4">LINE 愛心捐款 · 捐款成果總覽</p>
+                    <p class="text-xs font-bold text-tft-green tracking-widest uppercase mb-4">LINE 平台 · 成果總覽</p>
                     <div class="mb-2 flex items-center gap-2"><i class="fa-solid fa-rocket text-tft-yellow text-xs"></i><p class="text-xs font-bold text-tft-blue tracking-widest uppercase">專案成效</p></div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <div class="bg-gray-50 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">本期新增捐款金額</p><p class="text-2xl font-bold text-tft-blue" id="line-proj-amount">NT$ 0</p><p class="text-xs text-gray-400 mt-2">志工專案直接帶動</p></div>
@@ -512,12 +512,11 @@
                 <div class="lg:col-span-7 bg-[#061830] rounded-3xl p-6 min-h-[400px] border border-white/5 flex flex-col">
                     <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
                         <span class="text-xs text-tft-cream/50 tracking-wider"><i class="fa-regular fa-star text-tft-yellow mr-1"></i>便利貼牆</span>
-                        <span id="star-count" class="text-xs bg-tft-yellow/10 text-tft-yellow px-2.5 py-0.5 rounded-full">目前有 3 張便利貼</span>
                     </div>
                     <div id="star-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow content-start overflow-y-auto max-h-[350px] pr-2">
-                        <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition"><div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div><div><h5 class="text-xs font-bold text-tft-yellow">小麥</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">謝謝 TFT 的老師與小額志工，因為有你們，遠方的花朵得以順利綻放。</p></div></div>
+                        <!-- <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition"><div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div><div><h5 class="text-xs font-bold text-tft-yellow">小麥</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">謝謝 TFT 的老師與小額志工，因為有你們，遠方的花朵得以順利綻放。</p></div></div>
                         <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition"><div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div><div><h5 class="text-xs font-bold text-tft-yellow">教育系大四生</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">看了你們寫的志工故事深受感動，明年我也想報名 TFT 的正式教師計畫！</p></div></div>
-                        <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition"><div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div><div><h5 class="text-xs font-bold text-tft-yellow">TFT 忠實支持者</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">雖然能力有限，但我會一直定期定額支持，陪伴孩子看見希望。</p></div></div>
+                        <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition"><div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div><div><h5 class="text-xs font-bold text-tft-yellow">TFT 忠實支持者</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">雖然能力有限，但我會一直定期定額支持，陪伴孩子看見希望。</p></div></div> -->
                     </div>
                 </div>
             </div>
@@ -533,6 +532,10 @@
 
 </div>
 
+
+<!-- Firebase SDK：留言板資料儲存用 -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
     function lightUp(){
         document.getElementById('intro-overlay').classList.add('opacity-0','pointer-events-none');
@@ -719,24 +722,126 @@
         setTimeout(()=>m.classList.add('hidden'),300);
     }
 
-    let totalStars=3;
-    function addBlessing(e){
+    const firebaseConfig = {
+            apiKey: "AIzaSyALS3sE0Nej1-_gqVPklYOXhL4K3TclKgc",
+            authDomain: "tftvolunteer.firebaseapp.com",
+            projectId: "tftvolunteer",
+            storageBucket: "tftvolunteer.firebasestorage.app",
+            messagingSenderId: "250980334734",
+            appId: "1:250980334734:web:b5e681b695ef230ff39ddf",
+            measurementId: "G-E584VPF1S0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const BASE_STARS = 3; // HTML 裡原本預設的 3 張便利貼
+    let firebaseBlessingCount = 0;
+
+    function escapeHTML(str){
+        return String(str).replace(/[&<>"']/g, match => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#039;'
+        }[match]));
+    }
+
+    function formatTime(timestamp){
+        if(!timestamp || !timestamp.toDate) return '剛剛發表';
+        return timestamp.toDate().toLocaleString('zh-TW', {
+            month:'2-digit',
+            day:'2-digit',
+            hour:'2-digit',
+            minute:'2-digit'
+        });
+    }
+
+    function updateBlessingCount(){
+        const ce = document.getElementById('star-count');
+        ce.innerHTML = `目前有 ${BASE_STARS + firebaseBlessingCount} 張便利貼`;
+    }
+
+    function createBlessingCard(item){
+        const c = document.createElement('div');
+        c.className = 'firebase-blessing bg-tft-yellow/15 border border-tft-yellow/40 p-4 rounded-xl flex items-start space-x-3 hover:bg-tft-yellow/20 transition duration-300';
+        c.innerHTML = `
+            <div class="text-tft-yellow mt-1" style="animation-delay:${(Math.random()*2).toFixed(1)}s">
+                <i class="fa-solid fa-star star-blink"></i>
+            </div>
+            <div>
+                <h5 class="text-xs font-bold text-tft-yellow">
+                    ${escapeHTML(item.name)}
+                    <span class="text-[10px] text-tft-cream/40 font-normal ml-1">${formatTime(item.createdAt)}</span>
+                </h5>
+                <p class="text-xs text-tft-cream mt-1 leading-relaxed">${escapeHTML(item.message)}</p>
+            </div>
+        `;
+        return c;
+    }
+
+    function renderBlessings(snapshot){
+        const cont = document.getElementById('star-container');
+
+        // 只移除 Firebase 載入的留言，保留原本 HTML 內建的 3 張便利貼
+        cont.querySelectorAll('.firebase-blessing').forEach(el => el.remove());
+
+        firebaseBlessingCount = snapshot.size;
+
+        // orderBy desc：最新留言排最前面
+        snapshot.forEach(doc => {
+            const card = createBlessingCard(doc.data());
+            cont.insertBefore(card, cont.firstChild);
+        });
+
+        updateBlessingCount();
+    }
+
+    // 即時監聽 Firestore：別人留言後，畫面也會自動更新
+    db.collection('blessings')
+        .orderBy('createdAt', 'desc')
+        .limit(50)
+        .onSnapshot(renderBlessings, error => {
+            console.error('讀取留言失敗：', error);
+            alert('讀取留言失敗，請檢查 Firebase 設定或 Firestore 規則。');
+        });
+
+    async function addBlessing(e){
         e.preventDefault();
-        const n=document.getElementById('guest-name').value.trim();
-        const msg=document.getElementById('guest-msg').value.trim();
-        if(!n||!msg)return;
-        const c=document.createElement('div');
-        c.className='bg-tft-yellow/15 border border-tft-yellow/40 p-4 rounded-xl flex items-start space-x-3 hover:bg-tft-yellow/20 transition duration-300';
-        c.innerHTML=`<div class="text-tft-yellow mt-1" style="animation-delay:${(Math.random()*2).toFixed(1)}s"><i class="fa-solid fa-star star-blink"></i></div><div><h5 class="text-xs font-bold text-tft-yellow">${n} <span class="text-[10px] text-tft-cream/40 font-normal ml-1">剛剛發表</span></h5><p class="text-xs text-tft-cream mt-1 leading-relaxed">${msg}</p></div>`;
-        const cont=document.getElementById('star-container');
-        cont.insertBefore(c,cont.firstChild);
-        totalStars++;
-        const ce=document.getElementById('star-count');
-        ce.innerHTML=`目前有 ${totalStars} 顆閃爍微光`;
-        document.getElementById('guest-name').value=''; document.getElementById('guest-msg').value='';
-        cont.scrollTop=0;
-        ce.classList.add('scale-110','bg-tft-yellow/30');
-        setTimeout(()=>ce.classList.remove('scale-110','bg-tft-yellow/30'),500);
+
+        const n = document.getElementById('guest-name').value.trim();
+        const msg = document.getElementById('guest-msg').value.trim();
+
+        if(!n || !msg) return;
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 發送中';
+
+        try{
+            await db.collection('blessings').add({
+                name: n,
+                message: msg,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            document.getElementById('guest-name').value = '';
+            document.getElementById('guest-msg').value = '';
+
+            const cont = document.getElementById('star-container');
+            cont.scrollTop = 0;
+
+            const ce = document.getElementById('star-count');
+            ce.classList.add('scale-110','bg-tft-yellow/30');
+            setTimeout(() => ce.classList.remove('scale-110','bg-tft-yellow/30'), 500);
+        }catch(error){
+            console.error('新增留言失敗：', error);
+            alert('留言送出失敗，請檢查 Firebase 設定或 Firestore 規則。');
+        }finally{
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>發送';
+        }
     }
 </script>
 </body>
