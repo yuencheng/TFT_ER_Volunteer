@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>點亮教育的微光 - TFT 外關係小額志工成果發表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playpen+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tft: {
+                            blue: '#0B2F5C',
+                            cream: '#FFF9EA',
+                            yellow: '#F4B41A',
+                            green: '#4B8B7F',
+                            orange: '#E67E22',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        hand: ['Playpen Sans', 'Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .glowing-lantern { animation: pulse 2.5s infinite alternate; }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(244, 180, 26, 0.4); }
+            100% { transform: scale(1.05); box-shadow: 0 0 35px rgba(244, 180, 26, 0.9); }
+        }
+        .star-blink { animation: blink 3s infinite ease-in-out alternate; }
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .floating { animation: float 4s infinite ease-in-out; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animated-num { animation: countUp 0.5s ease both; }
+
+        /* ── 翻牌樣式 ── */
+        .flip-scene {
+            perspective: 900px;
+            cursor: pointer;
+            min-height: 160px;
+        }
+        .flip-card {
+            width: 100%;
+            height: 100%;
+            min-height: 160px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .flip-scene.flipped .flip-card {
+            transform: rotateY(180deg);
+        }
+        .flip-front, .flip-back {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .flip-front {
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+        }
+        .flip-back {
+            background: #0B2F5C;
+            color: #FFF9EA;
+            transform: rotateY(180deg);
+        }
+        /* 引導提示脈衝 */
+        .tap-hint {
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+        /* 首次引導光環 */
+        .hint-ring {
+            animation: ringPop 1.8s ease-out infinite;
+        }
+        @keyframes ringPop {
+            0% { box-shadow: 0 0 0 0 rgba(244,180,26,0.55); }
+            70% { box-shadow: 0 0 0 10px rgba(244,180,26,0); }
+            100% { box-shadow: 0 0 0 0 rgba(244,180,26,0); }
+        }
+    </style>
+</head>
+<body class="bg-tft-cream font-sans text-[#2C3E50] overflow-x-hidden">
+
+    <!-- 開場遮罩 -->
+    <div id="intro-overlay" class="fixed inset-0 bg-tft-blue z-50 flex flex-col items-center justify-center text-center px-4 transition-all duration-1000 ease-out">
+        <div class="max-w-2xl">
+            <button onclick="lightUp()" class="glowing-lantern w-28 h-28 bg-tft-yellow rounded-full flex items-center justify-center text-tft-blue text-4xl mb-8 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-all duration-500">
+                <i class="fa-solid fa-lightbulb"></i>
+            </button>
+            <h1 class="font-hand font-bold text-3xl md:text-4xl text-tft-cream tracking-wider mb-4">"People will forget what you said, <br/>people will forget what you did, <br/>but people will never forget how you made them feel"</h1>
+            <p class="text-tft-cream/80 text-lg mb-8 leading-relaxed font-light">
+                因為曾被這些故事感動，所以我們選擇成為 TFT的志工<br/>
+                如今，也希望透過每一篇故事，將這份感動繼續傳遞下去。
+            </p>
+            <span class="text-tft-yellow/60 text-sm animate-bounce block">
+                <i class="fa-solid fa-hand-pointer mr-2"></i>點擊上方燈泡點亮成果發表會
+            </span>
+        </div>
+    </div>
+
+    <!-- 主網頁內容 -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-1000">
+        
+        <!-- 導航列 -->
+        <nav class="bg-tft-blue text-tft-cream py-4 px-6 sticky top-0 z-40 shadow-md flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-tft-yellow rounded-full flex items-center justify-center text-tft-blue text-xs font-bold">TFT</div>
+                <span class="font-bold tracking-wider text-sm md:text-base">對外關係小額志工成發</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-sm">
+                <a href="#challenge" class="hover:text-tft-yellow transition">偏鄉挑戰</a>
+                <a href="#impact" class="hover:text-tft-yellow transition">成果軌跡</a>
+                <a href="#voices" class="hover:text-tft-yellow transition">夥伴真心話</a>
+                <a href="#blessings" class="hover:text-tft-yellow transition">微光星空</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="relative py-24 px-6 text-center bg-gradient-to-b from-tft-blue to-tft-blue/90 text-tft-cream overflow-hidden">
+            <div class="absolute inset-0 opacity-20 pointer-events-none">
+                <div class="absolute top-10 left-12 w-2 h-2 bg-white rounded-full star-blink"></div>
+                <div class="absolute top-32 right-20 w-3 h-3 bg-tft-yellow rounded-full star-blink" style="animation-delay: 1s;"></div>
+                <div class="absolute bottom-20 left-1/4 w-2 h-2 bg-white rounded-full star-blink" style="animation-delay: 1.5s;"></div>
+            </div>
+            <div class="max-w-4xl mx-auto relative z-10">
+                <span class="bg-tft-yellow/20 text-tft-yellow px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6 inline-block">
+                    TFT 114 對外關係小額志工成果發表
+                </span>
+                <h1 class="font-hand font-bold text-4xl md:text-6xl mb-6 text-tft-cream leading-tight">
+                    用微光，點亮教育的無限可能
+                </h1>
+                <p class="text-lg md:text-xl text-tft-cream/80 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                    我們是一群運用公關、社群與設計力量的小額志工。雖然力量微小，但我們深信：只要持續發光，偏鄉的孩子就能看見更遼闊的世界。
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <a href="#challenge" class="bg-tft-yellow text-tft-blue hover:bg-white px-8 py-3.5 rounded-full font-bold text-sm shadow-lg transition duration-300 w-full sm:w-auto">探索我們的故事</a>
+                    <a href="#blessings" class="border border-tft-cream/30 hover:border-tft-yellow px-8 py-3.5 rounded-full text-sm font-semibold transition duration-300 w-full sm:w-auto">寫下祝福</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 第一站：偏鄉挑戰 -->
+        <section id="challenge" class="py-20 px-6 max-w-5xl mx-auto scroll-mt-12">
+            <div class="text-center mb-16">
+                <span class="text-tft-green font-bold text-sm tracking-widest uppercase">SECTION 01 / THE CHALLENGE</span>
+                <h2 class="font-hand text-3xl md:text-4xl font-bold mt-2 text-tft-blue">你所不知道的教育現場</h2>
+                <div class="w-16 h-1 bg-tft-yellow mx-auto mt-4 rounded"></div>
+            </div>
+            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-tft-yellow/10 flex flex-col lg:flex-row gap-8 items-center">
+                <div class="lg:w-1/2">
+                    <span class="text-xs font-bold text-tft-orange bg-tft-orange/10 px-3 py-1 rounded-full">情境思考題</span>
+                    <h3 class="text-xl md:text-2xl font-bold mt-3 mb-6 text-tft-blue">「當孩子最喜歡的老師，每隔幾個月就要換一次...」</h3>
+                    <p class="text-gray-600 mb-8 leading-relaxed">在台灣的偏鄉與特殊偏遠地區，師資的不穩定常常是孩子心中最大的遺憾。請試著點擊下方其中一個按鈕，了解真實發生的數據：</p>
+                    <div class="space-y-4">
+                        <button onclick="revealData(1)" class="w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:border-tft-yellow hover:bg-tft-yellow/5 transition duration-300 font-medium flex justify-between items-center group">
+                            <span>A. 偏鄉教師一年的流動率大約有多高？</span>
+                            <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-tft-yellow transition"></i>
+                        </button>
+                        <button onclick="revealData(2)" class="w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:border-tft-yellow hover:bg-tft-yellow/5 transition duration-300 font-medium flex justify-between items-center group">
+                            <span>B. 穩定的陪伴，對孩子的學習成效影響？</span>
+                            <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-tft-yellow transition"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 w-full flex justify-center">
+                    <div id="data-card" class="w-full bg-tft-blue text-tft-cream p-8 rounded-2xl min-h-[250px] flex flex-col justify-center items-center text-center transition-all duration-500 shadow-inner relative overflow-hidden">
+                        <div id="card-placeholder" class="space-y-3">
+                            <div class="text-tft-yellow text-4xl mb-2"><i class="fa-regular fa-lightbulb animate-bounce"></i></div>
+                            <p class="font-medium text-lg">請選擇左側的問題，揭開數據幕後的真實含意</p>
+                            <p class="text-xs text-tft-cream/60">這些數字，是小額志工們想努力改變的起點。</p>
+                        </div>
+                        <div id="card-data-1" class="hidden space-y-4">
+                            <div class="text-tft-yellow text-6xl font-bold font-hand">約 30%</div>
+                            <h4 class="text-lg font-bold">高流動率帶來的安全感缺失</h4>
+                            <p class="text-sm text-tft-cream/80 leading-relaxed">根據統計，部分偏遠地區的代理代課老師比例偏高，平均每三個班級就有一位老師可能在隔年離開。小額志工這次優化了 TFT 的招募與募款公關文案，希望能為現場挹注更穩定的優質師資。</p>
+                        </div>
+                        <div id="card-data-2" class="hidden space-y-4">
+                            <div class="text-tft-yellow text-6xl font-bold font-hand">2.5 倍</div>
+                            <h4 class="text-lg font-bold">穩定陪伴带来的長遠轉變</h4>
+                            <p class="text-sm text-tft-cream/80 leading-relaxed">調查顯示，擁有穩定導師陪伴超過兩年的孩子，其自信心、自主學習力皆能提升高達 2.5 倍。這正是為什麼我們需要透過志願服務、捐款等方式，支持第一線教師能安心扎根！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第二站：志工影響力軌跡 -->
+        <section id="impact" class="py-20 bg-tft-blue/5 scroll-mt-12">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-tft-green font-bold text-sm tracking-widest uppercase">SECTION 02 / VOLUNTEER IMPACT</span>
+                    <h2 class="font-hand text-3xl md:text-4xl font-bold mt-2 text-tft-blue">志工成果展示</h2>
+                    <p class="text-gray-500 mt-2 max-w-xl mx-auto font-light text-sm">對外關係組小額志工主要負責各捐款平台的營運與優化，看看我們在有限的時間內施展了什麼魔法吧！</p>
+                    <div class="w-16 h-1 bg-tft-yellow mx-auto mt-4 rounded"></div>
+                </div>
+
+                <!-- Tab 控制鈕 -->
+                <div class="flex justify-center mb-10 overflow-x-auto pb-2 gap-2 md:gap-4">
+                    <button id="btn-tab-jko" onclick="switchTab('jko')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-tft-blue text-tft-cream shadow-md">
+                        <i class="fa-solid fa-credit-card mr-2"></i>街口支付
+                    </button>
+                    <button id="btn-tab-line" onclick="switchTab('line')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-white text-tft-blue border border-gray-200">
+                        <i class="fa-solid fa-comment mr-2"></i>LINE 愛心捐款
+                    </button>
+                    <button id="btn-tab-gg" onclick="switchTab('gg')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-white text-tft-blue border border-gray-200">
+                        <i class="fa-solid fa-globe mr-2"></i>Global Giving
+                    </button>
+                </div>
+
+                <!-- Tab 內容 -->
+                <div class="bg-white rounded-3xl p-8 shadow-lg">
+
+                    <!-- ══ 街口支付 ══ -->
+                    <div id="tab-content-jko" class="tab-content">
+                        <p class="text-xs font-bold text-tft-green tracking-widest uppercase mb-4">街口支付 · 捐款成果總覽</p>
+                        <div class="mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-rocket text-tft-yellow text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">專案成效</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">本期新增捐款金額</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="jko-proj-amount">NT$ 0</p>
+                                <p class="text-xs text-gray-400 mt-2">志工專案直接帶動</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">新增捐款筆數</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="jko-proj-count">0 筆</p>
+                                <p class="text-xs text-gray-400 mt-2">志工專案直接帶動</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">平均每筆捐款</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="jko-avg">NT$ 0</p>
+                                <p class="text-xs text-gray-400 mt-2">本期平均金額</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            <div class="border border-gray-100 rounded-xl p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="font-semibold text-tft-blue text-sm">偏鄉師資穩定計畫</span>
+                                    <span class="bg-green-100 text-green-800 text-[11px] font-semibold px-2 py-0.5 rounded-full">已上線</span>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-3">重新撰寫募款主文，以「孩子的一句話」開頭，帶動情感共鳴。</p>
+                                <div class="flex gap-4">
+                                    <p class="text-xs font-semibold text-green-700 flex items-center gap-1"><i class="fa-solid fa-circle-plus text-[10px]"></i>增加 NT$ 28,400</p>
+                                    <p class="text-xs font-semibold text-tft-blue flex items-center gap-1"><i class="fa-solid fa-receipt text-[10px]"></i>87 筆</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-100 rounded-xl p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="font-semibold text-tft-blue text-sm">年終教育希望包</span>
+                                    <span class="bg-green-100 text-green-800 text-[11px] font-semibold px-2 py-0.5 rounded-full">已上線</span>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-3">設計限時募款倒數機制，搭配個人化感謝信自動推送。</p>
+                                <div class="flex gap-4">
+                                    <p class="text-xs font-semibold text-green-700 flex items-center gap-1"><i class="fa-solid fa-circle-plus text-[10px]"></i>增加 NT$ 19,600</p>
+                                    <p class="text-xs font-semibold text-tft-blue flex items-center gap-1"><i class="fa-solid fa-receipt text-[10px]"></i>54 筆</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-water text-tft-blue text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">水位分析 · 整體捐款與前年比較</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">本年度累計捐款</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="jko-total">NT$ 0</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+38%</span>
+                                    <span class="text-xs text-gray-400">較前年</span>
+                                </div>
+                            </div>
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">前年度累計捐款</p>
+                                <p class="text-2xl font-bold text-gray-400" id="jko-prev">NT$ 0</p>
+                                <p class="text-xs text-gray-400 mt-2">2024 年全年</p>
+                            </div>
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">捐款人數</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="jko-donors">0 人</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+52%</span>
+                                    <span class="text-xs text-gray-400">較前年</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position:relative; height:200px;">
+                            <canvas id="chart-jko" role="img" aria-label="街口支付本年度與前年度每月捐款金額比較折線圖"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- ══ LINE 愛心捐款 ══ -->
+                    <div id="tab-content-line" class="tab-content hidden">
+                        <p class="text-xs font-bold text-tft-green tracking-widest uppercase mb-4">LINE 愛心捐款 · 捐款成果總覽</p>
+                        <div class="mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-rocket text-tft-yellow text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">專案成效</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">本期新增捐款金額</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="line-proj-amount">NT$ 0</p>
+                                <p class="text-xs text-gray-400 mt-2">志工專案直接帶動</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">新增捐款筆數</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="line-proj-count">0 筆</p>
+                                <p class="text-xs text-gray-400 mt-2">志工專案直接帶動</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">訂閱定期捐款人數</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="line-donors">0 人</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+44%</span>
+                                    <span class="text-xs text-gray-400">較前年</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            <div class="border border-gray-100 rounded-xl p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="font-semibold text-tft-blue text-sm">偏鄉孩子心內話</span>
+                                    <span class="bg-green-100 text-green-800 text-[11px] font-semibold px-2 py-0.5 rounded-full">已上線</span>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-3">LINE 推播改以孩子第一人稱語氣撰寫，搭配插圖提升開信率。</p>
+                                <div class="flex gap-4">
+                                    <p class="text-xs font-semibold text-green-700 flex items-center gap-1"><i class="fa-solid fa-circle-plus text-[10px]"></i>增加 NT$ 31,200</p>
+                                    <p class="text-xs font-semibold text-tft-blue flex items-center gap-1"><i class="fa-solid fa-receipt text-[10px]"></i>96 筆</p>
+                                </div>
+                            </div>
+                            <div class="border border-gray-100 rounded-xl p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="font-semibold text-tft-blue text-sm">每月微光小卡計畫</span>
+                                    <span class="bg-yellow-100 text-yellow-800 text-[11px] font-semibold px-2 py-0.5 rounded-full">進行中</span>
+                                </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-3">每月定期捐款者自動收到手繪微光感謝卡，強化長期留存。</p>
+                                <div class="flex gap-4">
+                                    <p class="text-xs font-semibold text-green-700 flex items-center gap-1"><i class="fa-solid fa-circle-plus text-[10px]"></i>增加 NT$ 14,800</p>
+                                    <p class="text-xs font-semibold text-tft-blue flex items-center gap-1"><i class="fa-solid fa-receipt text-[10px]"></i>41 筆</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-water text-tft-blue text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">水位分析 · 整體捐款與前年比較</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">本年度累計捐款</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="line-total">NT$ 0</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+61%</span>
+                                    <span class="text-xs text-gray-400">較前年</span>
+                                </div>
+                            </div>
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">前年度累計捐款</p>
+                                <p class="text-2xl font-bold text-gray-400" id="line-prev">NT$ 0</p>
+                                <p class="text-xs text-gray-400 mt-2">2024 年全年</p>
+                            </div>
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">點擊捐款轉換率</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="line-conv">0%</p>
+                                <p class="text-xs text-gray-400 mt-2">本期平均</p>
+                            </div>
+                        </div>
+                        <div style="position:relative; height:200px;">
+                            <canvas id="chart-line" role="img" aria-label="LINE 愛心捐款本年度與前年度每月捐款比較柱狀圖"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- ══ Global Giving ══ -->
+                    <div id="tab-content-gg" class="tab-content hidden">
+                        <p class="text-xs font-bold text-tft-green tracking-widest uppercase mb-4">Global Giving · 捐款成果總覽</p>
+
+                        <!-- ① 專案成效 翻牌區 -->
+                        <div class="mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-rocket text-tft-yellow text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">專案成效</p>
+                        </div>
+
+                        <!-- 引導提示 -->
+                        <div id="gg-flip-hint" class="flex items-center gap-2 mb-4 text-xs text-gray-400">
+                            <i class="fa-solid fa-hand-pointer tap-hint text-tft-yellow"></i>
+                            <span>點擊卡片，翻面查看成效 ↓</span>
+                        </div>
+
+                        <!-- 三張翻牌 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+                            <!-- 翻牌 1 -->
+                            <div class="flip-scene hint-ring rounded-2xl" onclick="flipCard(this)" role="button" aria-label="翻牌：確認文案圖片與時程">
+                                <div class="flip-card">
+                                    <!-- 正面：努力 -->
+                                    <div class="flip-front">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span class="bg-tft-blue/10 text-tft-blue text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">努力</span>
+                                                <span class="text-gray-300 text-xs">點擊看成效</span>
+                                            </div>
+                                            <div class="w-8 h-8 rounded-full bg-tft-blue/8 flex items-center justify-center mb-3">
+                                                <i class="fa-solid fa-pen-to-square text-tft-blue text-sm"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-gray-700 leading-relaxed">確認文案、圖片與時程，確保募款活動順利上線</p>
+                                        </div>
+                                        <div class="flex justify-end mt-3">
+                                            <i class="fa-solid fa-rotate text-gray-300 text-sm tap-hint"></i>
+                                        </div>
+                                    </div>
+                                    <!-- 背面：成效 -->
+                                    <div class="flip-back">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span class="bg-tft-yellow/20 text-tft-yellow text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">成效</span>
+                                            </div>
+                                            <div class="w-8 h-8 rounded-full bg-tft-yellow/20 flex items-center justify-center mb-3">
+                                                <i class="fa-solid fa-circle-dollar-to-slot text-tft-yellow text-sm"></i>
+                                            </div>
+                                            <p class="text-tft-cream/80 text-xs mb-2">帶動新增捐款</p>
+                                            <p class="text-tft-yellow font-bold text-2xl" id="gg-proj-amount">USD 0</p>
+                                        </div>
+                                        <div class="flex justify-end mt-3">
+                                            <i class="fa-solid fa-rotate text-tft-cream/30 text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 翻牌 2 -->
+                            <div class="flip-scene rounded-2xl" onclick="flipCard(this)" role="button" aria-label="翻牌：學習線上課程">
+                                <div class="flip-card">
+                                    <div class="flip-front">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span class="bg-tft-blue/10 text-tft-blue text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">努力</span>
+                                                <span class="text-gray-300 text-xs">點擊看成效</span>
+                                            </div>
+                                            <div class="w-8 h-8 rounded-full bg-tft-blue/8 flex items-center justify-center mb-3">
+                                                <i class="fa-solid fa-headphones text-tft-blue text-sm"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-gray-700 leading-relaxed">聆聽 Fundraising podcast，完成線上課後考試及作業</p>
+                                        </div>
+                                        <div class="flex justify-end mt-3">
+                                            <i class="fa-solid fa-rotate text-gray-300 text-sm tap-hint"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flip-back">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span class="bg-tft-yellow/20 text-tft-yellow text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">成效</span>
+                                            </div>
+                                            <div class="w-8 h-8 rounded-full bg-tft-yellow/20 flex items-center justify-center mb-3">
+                                                <i class="fa-solid fa-star text-tft-yellow text-sm"></i>
+                                            </div>
+                                            <p class="text-tft-cream/80 text-xs mb-2">GG Points 增加</p>
+                                            <p class="text-tft-yellow font-bold text-2xl">+12 pts</p>
+                                        </div>
+                                        <div class="flex justify-end mt-3">
+                                            <i class="fa-solid fa-rotate text-tft-cream/30 text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 翻牌 3 -->
+                            <div class="flip-scene rounded-2xl" onclick="flipCard(this)" role="button" aria-label="翻牌：上傳報告與感謝信">
+                                <div class="flip-card">
+                                    <div class="flip-front">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span class="bg-tft-blue/10 text-tft-blue text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">努力</span>
+                                                <span class="text-gray-300 text-xs">點擊看成效</span>
+                                            </div>
+                                            <div class="w-8 h-8 rounded-full bg-tft-blue/8 flex items-center justify-center mb-3">
+                                                <i class="fa-solid fa-file-arrow-up text-tft-blue text-sm"></i>
+                                            </div>
+                                            <p class="text-sm font-medium text-gray-700 leading-relaxed">上傳定期專案報告，撰寫並寄出捐款感謝信</p>
+                                        </div>
+                                        <div class="flex justify-end mt-3">
+                                            <i class="fa-solid fa-rotate text-gray-300 text-sm tap-hint"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flip-back">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span class="bg-tft-yellow/20 text-tft-yellow text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">成效</span>
+                                            </div>
+                                            <div class="w-8 h-8 rounded-full bg-tft-yellow/20 flex items-center justify-center mb-3">
+                                                <i class="fa-solid fa-star text-tft-yellow text-sm"></i>
+                                            </div>
+                                            <p class="text-tft-cream/80 text-xs mb-1">專案評分</p>
+                                            <p class="text-tft-yellow font-bold text-xl">−5 → <span class="text-2xl">+5</span></p>
+                                            <p class="text-tft-cream/60 text-xs mt-2">感謝信額外加分 <span class="text-tft-yellow font-bold">+4</span></p>
+                                        </div>
+                                        <div class="flex justify-end mt-3">
+                                            <i class="fa-solid fa-rotate text-tft-cream/30 text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- end flip grid -->
+
+                        <!-- ② 專案故事 -->
+                        <div class="mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-book-open text-tft-blue text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">專案故事</p>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-4">點擊卡片展開完整故事內文</p>
+
+                        <div class="space-y-3 mb-8">
+
+                            <!-- 故事卡 1 -->
+                            <div class="border border-gray-100 rounded-xl overflow-hidden">
+                                <!-- 卡片預覽列（永遠顯示） -->
+                                <button onclick="toggleStory('story-1', this)" class="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition text-left group">
+                                    <img src="img/gg_tsg.png" style="width:80px;height:60px;" class="object-cover rounded-lg flex-shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs text-tft-green font-semibold mb-0.5">Story 01</p>
+                                        <p class="font-semibold text-tft-blue text-sm leading-snug">A Game That Sparked More Than Cheers: Children's First Step Into the Ballpark</p>
+                                        <p class="text-xs text-gray-400 mt-1 line-clamp-1">Have you ever felt the thrill of stepping into a stadium for the very first time...</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down text-gray-300 group-hover:text-tft-yellow transition flex-shrink-0 story-chevron"></i>
+                                </button>
+                                <!-- 展開內文 -->
+                                <div id="story-1" class="hidden border-t border-gray-100">
+                                    <div class="flex flex-col md:flex-row gap-0">
+                                        <img src="img/gg_tsg.png" class="w-full md:w-64 object-cover flex-shrink-0" style="max-height:220px;">
+                                        <div class="p-6 text-sm text-gray-600 leading-relaxed space-y-3">
+                                            <p>Have you ever felt the thrill of stepping into a stadium for the very first time—the lights, the crowd, the cheers echoing all around you?</p>
+                                            <p>What does excitement look like when it can't be contained?</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 故事卡 2 -->
+                            <div class="border border-gray-100 rounded-xl overflow-hidden">
+                                <button onclick="toggleStory('story-2', this)" class="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition text-left group">
+                                    <img src="img/gg_another.jpg" style="width:80px;height:60px;" class="object-cover rounded-lg flex-shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs text-tft-green font-semibold mb-0.5">Story 02 · By Lu Yue | TFT ER Team</p>
+                                        <p class="font-semibold text-tft-blue text-sm leading-snug">When "Another New Student" Becomes the Norm</p>
+                                        <p class="text-xs text-gray-400 mt-1 line-clamp-1">Have you ever wondered how many times a child can start over?</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down text-gray-300 group-hover:text-tft-yellow transition flex-shrink-0 story-chevron"></i>
+                                </button>
+                                <div id="story-2" class="hidden border-t border-gray-100">
+                                    <div class="flex flex-col md:flex-row gap-0">
+                                        <img src="img/gg_another.jpg" class="w-full md:w-64 object-cover flex-shrink-0" style="max-height:260px;">
+                                        <div class="p-6 space-y-5 text-sm text-gray-600 leading-relaxed overflow-y-auto" style="max-height:420px;">
+                                            <p class="italic text-gray-400">Have you ever wondered how many times a child can start over?<br>How many "first days" can one hold before they begin to feel ordinary—or exhausting?<br>And what happens when constant change becomes a child's everyday reality?</p>
+
+                                            <div>
+                                                <p class="font-bold text-tft-blue mb-1">Another First Day—Again</p>
+                                                <p>In my first year of teaching, my class had 19 students. By the second year, transfer students kept arriving—one after another. The classroom grew more crowded, lessons were interrupted more often, and someone joked, "You must be a great teacher—everyone keeps transferring here!"</p>
+                                                <p class="mt-2">But I couldn't laugh. What I saw were the quiet, heavy stories behind each transfer.</p>
+                                            </div>
+
+                                            <div>
+                                                <p class="font-bold text-tft-blue mb-1">Children Who Are Always Starting Over</p>
+                                                <p>These children reminded me of seedlings blown by the wind. Just as they begin to take root, they are uprooted again—forced to start over in a new place.</p>
+                                                <p class="mt-2">Behind every transfer is a lack of choice: changes in caregivers, learning struggles, parents moving for work. Each move means rebuilding routines, relationships, and a sense of belonging—again and again.</p>
+                                            </div>
+
+                                            <div>
+                                                <p class="font-bold text-tft-blue mb-1">Rethinking Educational Equity</p>
+                                                <p>When we talk about educational equity, we often focus on resources or staffing. But for children living in constant transition, what they need most is continuity— a classroom willing to wait, a community willing to welcome, and an education system that understands their life's rhythm.</p>
+                                                <p class="mt-2">Perhaps true equity is not placing every child at the same starting line, but ensuring that even those pushed forward by life can keep learning—without having to repeatedly learn how to belong.</p>
+                                            </div>
+
+                                            <div>
+                                                <p class="font-bold text-tft-blue mb-1">Changing What Children Arrive To</p>
+                                                <p>We may not be able to stop children from moving again and again. But we can change what awaits them when they arrive.</p>
+                                                <p class="mt-2">Sometimes, education begins with something simple: open arms, a sincere smile, and the words— <span class="text-tft-blue font-medium">"You're welcome here."</span></p>
+                                            </div>
+
+                                            <div class="bg-tft-cream border border-tft-yellow/30 rounded-xl p-4">
+                                                <p class="font-bold text-tft-blue mb-1 text-xs uppercase tracking-widest">Thank You for Making This Possible</p>
+                                                <p class="text-xs text-gray-500 leading-relaxed">Your support makes stories like this possible. Because of your generosity, Teach For Taiwan can continue supporting teachers and classrooms that become steady ground for children who are always starting over. Every donation helps ensure these changes are not one-time moments, but lasting ones.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 故事卡 3 -->
+                            <div class="border border-gray-100 rounded-xl overflow-hidden">
+                                <button onclick="toggleStory('story-3', this)" class="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition text-left group">
+                                    <img src="img/gg_letter.jpg" style="width:80px;height:60px;" class="object-cover rounded-lg flex-shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs text-tft-green font-semibold mb-0.5">Story 03</p>
+                                        <p class="font-semibold text-tft-blue text-sm leading-snug">A Letter Written with Two Years of Care</p>
+                                        <p class="text-xs text-gray-400 mt-1 line-clamp-1">More than anything, I hope you grow into confident people...</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down text-gray-300 group-hover:text-tft-yellow transition flex-shrink-0 story-chevron"></i>
+                                </button>
+                                <div id="story-3" class="hidden border-t border-gray-100">
+                                    <div class="flex flex-col md:flex-row gap-0">
+                                        <img src="img/gg_letter.jpg" class="w-full md:w-64 object-cover flex-shrink-0" style="max-height:220px;">
+                                        <div class="p-6 text-sm text-gray-600 leading-relaxed space-y-3">
+                                            <p class="italic">More than anything, I hope you grow into confident people.<br>Not the strongest—but those who know their own uniqueness and where they shine.</p>
+                                            <p>You will become even more capable than you are now.</p>
+                                            <p>Every small effort you make will one day become a treasure no one can take away.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- end story cards -->
+
+                        <!-- ③ 水位分析 -->
+                        <div class="mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-water text-tft-blue text-xs"></i>
+                            <p class="text-xs font-bold text-tft-blue tracking-widest uppercase">水位分析 · 整體捐款與前年比較</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">2025/9 - 2026/5 總捐款</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="gg-total">USD 0</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+11%</span>
+                                    <span class="text-xs text-gray-400">較前期</span>
+                                </div>
+                            </div>
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">平均單筆捐款</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="gg-avgsingle">USD 0</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-down text-[10px]"></i>-8%</span>
+                                    <span class="text-xs text-gray-400">扣除員工捐後，較前期</span>
+                                </div>
+                            </div>
+                            <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5">
+                                <p class="text-xs text-gray-500 mb-1">總捐款筆數</p>
+                                <p class="text-2xl font-bold text-tft-blue" id="gg-time">0 筆</p>
+                            </div>
+                        </div>
+                    </div><!-- end gg tab -->
+
+                </div><!-- end bg-white card -->
+            </div>
+        </section>
+
+        <!-- 第三站：夥伴真心話 -->
+        <section id="voices" class="py-20 px-6 max-w-5xl mx-auto scroll-mt-12">
+            <div class="text-center mb-16">
+                <span class="text-tft-green font-bold text-sm tracking-widest uppercase">SECTION 03 / VOICES OF PARTNERS</span>
+                <h2 class="font-hand text-3xl md:text-4xl font-bold mt-2 text-tft-blue">夥伴真心話：聽聽他們的呢喃</h2>
+                <p class="text-gray-500 mt-2 max-w-xl mx-auto font-light text-sm">點擊下方在微光中漂浮的幸福信箋，讀讀來自孩子、偏鄉老師與志工夥伴們手寫的溫度。</p>
+                <div class="w-16 h-1 bg-tft-yellow mx-auto mt-4 rounded"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 py-8">
+                <div onclick="openLetter(1)" class="floating bg-white hover:bg-tft-yellow/10 border border-tft-yellow/20 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition duration-300 text-center flex flex-col items-center group">
+                    <div class="text-tft-yellow text-4xl mb-4 group-hover:scale-110 transition duration-300"><i class="fa-regular fa-envelope-open"></i></div>
+                    <span class="text-xs font-bold bg-tft-blue/10 text-tft-blue px-2.5 py-1 rounded-full mb-3">來自孩子的心聲</span>
+                    <h4 class="font-bold text-gray-700">「小魚老師，你明年還會來嗎？」</h4>
+                    <p class="text-xs text-gray-400 mt-2">點擊拆封閱讀信件內容</p>
+                </div>
+                <div onclick="openLetter(2)" class="floating bg-white hover:bg-tft-yellow/10 border border-tft-yellow/20 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition duration-300 text-center flex flex-col items-center group" style="animation-delay: 1s;">
+                    <div class="text-tft-orange text-4xl mb-4 group-hover:scale-110 transition duration-300"><i class="fa-regular fa-envelope-open"></i></div>
+                    <span class="text-xs font-bold bg-tft-orange/10 text-tft-orange px-2.5 py-1 rounded-full mb-3">第一線偏鄉教師</span>
+                    <h4 class="font-bold text-gray-700">「在這裡，我並不孤單。」</h4>
+                    <p class="text-xs text-gray-400 mt-2">點擊拆封閱讀信件內容</p>
+                </div>
+                <div onclick="openLetter(3)" class="floating bg-white hover:bg-tft-yellow/10 border border-tft-yellow/20 p-6 rounded-2xl shadow-md hover:shadow-xl cursor-pointer transition duration-300 text-center flex flex-col items-center group" style="animation-delay: 2s;">
+                    <div class="text-tft-green text-4xl mb-4 group-hover:scale-110 transition duration-300"><i class="fa-regular fa-envelope-open"></i></div>
+                    <span class="text-xs font-bold bg-tft-green/10 text-tft-green px-2.5 py-1 rounded-full mb-3">小額志工的反思</span>
+                    <h4 class="font-bold text-gray-700">「我們做的，真的有幫助嗎？」</h4>
+                    <p class="text-xs text-gray-400 mt-2">點擊拆封閱讀信件內容</p>
+                </div>
+            </div>
+            <div id="letter-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300 opacity-0">
+                <div class="bg-tft-cream rounded-3xl max-w-lg w-full p-8 md:p-10 shadow-2xl relative border-t-8 border-tft-yellow">
+                    <button onclick="closeLetter()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+                    <div id="modal-content" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第四站：微光許願星空 -->
+        <section id="blessings" class="py-24 bg-tft-blue text-tft-cream relative overflow-hidden scroll-mt-12">
+            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                <div class="absolute top-24 left-10 w-24 h-1 bg-gradient-to-r from-transparent to-white -rotate-45"></div>
+                <div class="absolute top-48 right-12 w-32 h-1 bg-gradient-to-r from-transparent to-white -rotate-45"></div>
+            </div>
+            <div class="max-w-6xl mx-auto px-6 relative z-10">
+                <div class="text-center mb-16">
+                    <span class="text-tft-yellow font-bold text-sm tracking-widest uppercase">SECTION 04 / LIGHT UP THE SKY</span>
+                    <h2 class="font-hand text-3xl md:text-5xl font-bold mt-2">微光星空：寫下你的祝福</h2>
+                    <p class="text-tft-cream/70 mt-3 max-w-xl mx-auto text-sm font-light leading-relaxed">成發不是結束，而是邀請更多人加入的起點。留下你給偏鄉孩子或 TFT 團隊的一句話，這句話會瞬間化為一顆在星空中閃耀的星星！</p>
+                    <div class="w-16 h-1 bg-tft-yellow mx-auto mt-4 rounded"></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    <div class="lg:col-span-5 bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
+                        <h3 class="text-xl font-bold mb-6 flex items-center">
+                            <i class="fa-solid fa-feather-pointed text-tft-yellow mr-2"></i>寫下心願信箋
+                        </h3>
+                        <form onsubmit="addBlessing(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-xs text-tft-cream/80 mb-2 font-medium">你的名字 / 暱稱</label>
+                                <input type="text" id="guest-name" required placeholder="例如：溫暖的旅人" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-tft-cream placeholder-tft-cream/40 focus:outline-none focus:border-tft-yellow transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-tft-cream/80 mb-2 font-medium">你想送給偏鄉孩子或 TFT 志工的話</label>
+                                <textarea id="guest-msg" rows="3" required placeholder="用一句話，傳遞陪伴的溫度..." class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-tft-cream placeholder-tft-cream/40 focus:outline-none focus:border-tft-yellow transition text-sm resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-tft-yellow hover:bg-white text-tft-blue font-bold py-3.5 rounded-xl transition duration-300 text-sm flex items-center justify-center gap-2 shadow-lg">
+                                <i class="fa-solid fa-paper-plane"></i> 發射我的微光祝福
+                            </button>
+                        </form>
+                    </div>
+                    <div class="lg:col-span-7 bg-[#061830] rounded-3xl p-6 min-h-[400px] border border-white/5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                            <span class="text-xs text-tft-cream/50 tracking-wider"><i class="fa-regular fa-star text-tft-yellow mr-1"></i> 即時渲染星空牆</span>
+                            <span id="star-count" class="text-xs bg-tft-yellow/10 text-tft-yellow px-2.5 py-0.5 rounded-full">目前有 3 顆閃爍微光</span>
+                        </div>
+                        <div id="star-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow content-start overflow-y-auto max-h-[350px] pr-2">
+                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition">
+                                <div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div>
+                                <div><h5 class="text-xs font-bold text-tft-yellow">小麥</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">謝謝 TFT 的老師與小額志工，因為有你們，遠方的花朵得以順利綻放。</p></div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition">
+                                <div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div>
+                                <div><h5 class="text-xs font-bold text-tft-yellow">教育系大四生</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">看了你們寫的志工故事深受感動，明年我也想報名 TFT 的正式教師計畫！</p></div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start space-x-3 hover:bg-white/10 transition">
+                                <div class="text-tft-yellow mt-1"><i class="fa-solid fa-star star-blink"></i></div>
+                                <div><h5 class="text-xs font-bold text-tft-yellow">TFT 忠實支持者</h5><p class="text-xs text-tft-cream/80 mt-1 leading-relaxed">雖然能力有限，但我會一直定期定額支持，陪伴孩子看見希望。</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁尾 -->
+        <footer class="bg-[#051528] py-12 px-6 text-center text-tft-cream/60 text-sm">
+            <div class="max-w-2xl mx-auto space-y-4">
+                <p class="font-hand text-lg text-tft-yellow">「願我們都是守護微光的人。」</p>
+                <p class="font-light">Teach For Taiwan 為台灣而教 · 2026 外部關係部小額志工發表會專屬網站架構</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        /* ── 開場動畫 ── */
+        function lightUp() {
+            const overlay = document.getElementById('intro-overlay');
+            const main    = document.getElementById('main-content');
+            overlay.classList.add('opacity-0','pointer-events-none');
+            main.classList.remove('opacity-0');
+            main.classList.add('opacity-100');
+            document.body.classList.remove('overflow-hidden');
+            initJkoTab();
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('overflow-hidden');
+        });
+
+        /* ── 第一站 QA ── */
+        function revealData(type) {
+            const placeholder = document.getElementById('card-placeholder');
+            const data1 = document.getElementById('card-data-1');
+            const data2 = document.getElementById('card-data-2');
+            const card  = document.getElementById('data-card');
+            card.style.transform = 'rotateY(360deg)';
+            setTimeout(() => {
+                placeholder.classList.add('hidden');
+                data1.classList.toggle('hidden', type !== 1);
+                data2.classList.toggle('hidden', type !== 2);
+            }, 250);
+            setTimeout(() => { card.style.transform = 'none'; }, 500);
+        }
+
+        /* ── GG 故事展開 ── */
+        function toggleStory(id, btn) {
+            const panel = document.getElementById(id);
+            const chevron = btn.querySelector('.story-chevron');
+            const isOpen = !panel.classList.contains('hidden');
+            // 關閉其他
+            ['story-1','story-2','story-3'].forEach(s => {
+                const p = document.getElementById(s);
+                if (p) p.classList.add('hidden');
+            });
+            document.querySelectorAll('.story-chevron').forEach(c => c.classList.remove('rotate-180'));
+            // 切換當前
+            if (!isOpen) {
+                panel.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            }
+        }
+
+        /* ── GG 翻牌 ── */
+        function flipCard(scene) {
+            scene.classList.toggle('flipped');
+            // 第一次翻開後移除引導光環與提示
+            const hint = document.getElementById('gg-flip-hint');
+            if (hint) hint.style.opacity = '0';
+            scene.classList.remove('hint-ring');
+        }
+
+        /* ── 計數器動畫 ── */
+        function animateCount(el, from, to, fmt, duration) {
+            if (!el) return;
+            const start = performance.now();
+            function update(now) {
+                const t    = Math.min((now - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - t, 3);
+                const val  = Math.round(from + (to - from) * ease);
+                el.textContent = fmt(val);
+                if (t < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        /* ── Chart.js 雙線工廠 ── */
+        const chartInstances = {};
+        function makeDualChart(id, labels, dataCurr, dataPrev, type) {
+            const ctx = document.getElementById(id);
+            if (!ctx) return;
+            if (chartInstances[id]) { chartInstances[id].destroy(); }
+            chartInstances[id] = new Chart(ctx, {
+                type: type || 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: '本年度',
+                            data: dataCurr,
+                            borderColor: '#0B2F5C',
+                            backgroundColor: type === 'bar' ? 'rgba(11,47,92,0.7)' : 'rgba(11,47,92,0.08)',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#F4B41A',
+                            pointBorderColor: '#0B2F5C',
+                            pointRadius: 4,
+                            fill: type !== 'bar',
+                            tension: 0.4
+                        },
+                        {
+                            label: '前年度',
+                            data: dataPrev,
+                            borderColor: '#9CA3AF',
+                            backgroundColor: type === 'bar' ? 'rgba(156,163,175,0.4)' : 'rgba(156,163,175,0.06)',
+                            borderWidth: 2,
+                            borderDash: type !== 'bar' ? [5,4] : [],
+                            pointBackgroundColor: '#9CA3AF',
+                            pointBorderColor: '#9CA3AF',
+                            pointRadius: 3,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true, position: 'top', align: 'end',
+                            labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 }, color: '#6B7280', padding: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#888' } },
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.06)' },
+                            ticks: { font: { size: 11 }, color: '#888', callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* ── Tab 切換 ── */
+        const TAB_IDS = ['jko','line','gg'];
+        const tabInited = { jko: false, line: false, gg: false };
+
+        function initJkoTab() {
+            if (tabInited.jko) return;
+            tabInited.jko = true;
+            makeDualChart('chart-jko',
+                ['1月','2月','3月','4月','5月','6月'],
+                [12000,15000,18000,22000,28000,38000],
+                [8000,10000,12000,14000,18000,28000], 'line');
+            animateCount(document.getElementById('jko-proj-amount'), 0, 48000,  v => 'NT$ ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('jko-proj-count'),  0, 141,    v => v + ' 筆', 1200);
+            animateCount(document.getElementById('jko-avg'),         0, 323,    v => 'NT$ ' + v, 1200);
+            animateCount(document.getElementById('jko-total'),       0, 133000, v => 'NT$ ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('jko-prev'),        0, 96000,  v => 'NT$ ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('jko-donors'),      0, 412,    v => v.toLocaleString() + ' 人', 1200);
+        }
+        function initLineTab() {
+            if (tabInited.line) return;
+            tabInited.line = true;
+            makeDualChart('chart-line',
+                ['1月','2月','3月','4月','5月','6月'],
+                [8000,11000,14000,19000,25000,42000],
+                [5000, 7000, 9000,11000,14000,26000], 'bar');
+            animateCount(document.getElementById('line-proj-amount'), 0, 46000,  v => 'NT$ ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('line-proj-count'),  0, 137,    v => v + ' 筆', 1200);
+            animateCount(document.getElementById('line-donors'),      0, 287,    v => v.toLocaleString() + ' 人', 1200);
+            animateCount(document.getElementById('line-total'),       0, 119000, v => 'NT$ ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('line-prev'),        0, 74000,  v => 'NT$ ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('line-conv'),        0, 12,     v => v + '%', 1200);
+        }
+        function initGgTab() {
+            if (tabInited.gg) return;
+            tabInited.gg = true;
+            // 翻牌背面計數器
+            animateCount(document.getElementById('gg-proj-amount'), 0, 1116, v => 'USD ' + v.toLocaleString() + '.25', 1400);
+            // 水位
+            animateCount(document.getElementById('gg-total'),      0, 203846, v => 'USD ' + v.toLocaleString(), 1200);
+            animateCount(document.getElementById('gg-avgsingle'),  0, 222,    v => 'USD ' + v + '.75', 1200);
+            animateCount(document.getElementById('gg-time'),       0, 63,     v => v + ' 筆', 1200);
+        }
+
+        function switchTab(group) {
+            TAB_IDS.forEach(t => {
+                document.getElementById('tab-content-' + t).classList.toggle('hidden', t !== group);
+                const btn = document.getElementById('btn-tab-' + t);
+                if (t === group) {
+                    btn.classList.add('bg-tft-blue','text-tft-cream','shadow-md');
+                    btn.classList.remove('bg-white','text-tft-blue','border','border-gray-200');
+                } else {
+                    btn.classList.remove('bg-tft-blue','text-tft-cream','shadow-md');
+                    btn.classList.add('bg-white','text-tft-blue','border','border-gray-200');
+                }
+            });
+            if (group === 'jko')  initJkoTab();
+            if (group === 'line') initLineTab();
+            if (group === 'gg')   initGgTab();
+        }
+
+        /* ── 真心話 Modal ── */
+        const letterData = {
+            1: `<div class="flex items-center space-x-3 mb-4"><div class="text-3xl text-tft-yellow"><i class="fa-solid fa-child-reaching"></i></div><div><h4 class="font-bold text-tft-blue text-lg">孩子的一封信</h4><p class="text-xs text-gray-500">屏東服務區 · 小學三年級</p></div></div><p class="text-gray-600 leading-relaxed font-hand text-sm md:text-base">「小魚老師，你明年還會來嗎？以前我們學校常常有老師只來一學期就不見了，害我都不能好好和他們說再見。但我發現今年，小魚老師留下來了，他還在聖誕節帶我們一起寫信，我很想跟老師說：謝謝你沒有走，謝謝你願意陪我長大。」</p>`,
+            2: `<div class="flex items-center space-x-3 mb-4"><div class="text-3xl text-tft-orange"><i class="fa-solid fa-chalkboard-user"></i></div><div><h4 class="font-bold text-tft-blue text-lg">第一線教師的心情記錄</h4><p class="text-xs text-gray-500">花蓮服務區 · TFT 第三屆教師</p></div></div><p class="text-gray-600 leading-relaxed text-sm md:text-base">「隻身一人來到偏鄉，面對資源短缺、家庭結構複雜的現場，說沒有挫折是騙人的。但我常常在週五晚上收到來自外部關係部轉寄來的『大眾支持信札』與『小額捐款微光小卡』。這些不曾謀面的人們捎來的溫度，提醒了我，我在這裡並不孤單。有人在後面，默默托著我們的夢想。」</p>`,
+            3: `<div class="flex items-center space-x-3 mb-4"><div class="text-3xl text-tft-green"><i class="fa-solid fa-heart-pulse"></i></div><div><h4 class="font-bold text-tft-blue text-lg">小額志工的溫暖反思</h4><p class="text-xs text-gray-500">外關係部小額志工 · 佳穎</p></div></div><p class="text-gray-600 leading-relaxed text-sm md:text-base">「一開始，我也懷疑過：『我們只是在冷氣房裡寫寫文案、改改企劃書、發發開發信，這樣真的有幫助到第一線的孩子嗎？』直到成發這天，看到我們經手撰寫的募款文案，真的吸引了數位新企業主聯絡 TFT 詢問長期資助，我才明白：每顆在後方敲擊鍵盤的微光，都實實在在地縮短了大山與城市之間的距離。」</p>`
+        };
+        function openLetter(id) {
+            const modal = document.getElementById('letter-modal');
+            document.getElementById('modal-content').innerHTML = letterData[id];
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); }, 50);
+        }
+        function closeLetter() {
+            const modal = document.getElementById('letter-modal');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        /* ── 許願星空 ── */
+        let totalStars = 3;
+        function addBlessing(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('guest-name');
+            const msgInput  = document.getElementById('guest-msg');
+            const name = nameInput.value.trim();
+            const msg  = msgInput.value.trim();
+            if (!name || !msg) return;
+            const starCard = document.createElement('div');
+            starCard.className = 'bg-tft-yellow/15 border border-tft-yellow/40 p-4 rounded-xl flex items-start space-x-3 hover:bg-tft-yellow/20 transition duration-300';
+            const randomDelay = (Math.random() * 2).toFixed(1);
+            starCard.innerHTML = `
+                <div class="text-tft-yellow mt-1" style="animation-delay:${randomDelay}s"><i class="fa-solid fa-star star-blink"></i></div>
+                <div>
+                    <h5 class="text-xs font-bold text-tft-yellow">${name} <span class="text-[10px] text-tft-cream/40 font-normal ml-1">剛剛發表</span></h5>
+                    <p class="text-xs text-tft-cream mt-1 leading-relaxed">${msg}</p>
+                </div>`;
+            const container = document.getElementById('star-container');
+            container.insertBefore(starCard, container.firstChild);
+            totalStars++;
+            const countEl = document.getElementById('star-count');
+            countEl.innerHTML = `目前有 ${totalStars} 顆閃爍微光`;
+            nameInput.value = ''; msgInput.value = '';
+            container.scrollTop = 0;
+            countEl.classList.add('scale-110','bg-tft-yellow/30');
+            setTimeout(() => countEl.classList.remove('scale-110','bg-tft-yellow/30'), 500);
+        }
+    </script>
+</body>
+</html>
