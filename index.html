@@ -156,7 +156,7 @@
 
             <div class="flex justify-center mb-10 overflow-x-auto pb-2 gap-2 md:gap-4">
                 <button id="btn-tab-jko" onclick="switchTab('jko')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-tft-blue text-tft-cream shadow-md"><i class="fa-solid fa-credit-card mr-2"></i>街口支付</button>
-                <button id="btn-tab-line" onclick="switchTab('line')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-white text-tft-blue border border-gray-200"><i class="fa-solid fa-comment mr-2"></i>LINE 愛心捐款</button>
+                <button id="btn-tab-line" onclick="switchTab('line')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-white text-tft-blue border border-gray-200"><i class="fa-solid fa-comment mr-2"></i>LINE 平台</button>
                 <button id="btn-tab-gg" onclick="switchTab('gg')" class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition bg-white text-tft-blue border border-gray-200"><i class="fa-solid fa-globe mr-2"></i>Global Giving</button>
             </div>
 
@@ -301,11 +301,12 @@
                             <div class="flex gap-4"><p class="text-xs font-semibold text-green-700 flex items-center gap-1"><i class="fa-solid fa-circle-plus text-[10px]"></i>增加 NT$ 14,800</p><p class="text-xs font-semibold text-tft-blue flex items-center gap-1"><i class="fa-solid fa-receipt text-[10px]"></i>41 筆</p></div>
                         </div>
                     </div>
-                    <div class="mb-3 flex items-center gap-2"><i class="fa-solid fa-water text-tft-blue text-xs"></i><p class="text-xs font-bold text-tft-blue tracking-widest uppercase">水位分析 · 整體捐款與前年比較</p></div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">本年度累計捐款</p><p class="text-2xl font-bold text-tft-blue" id="line-total">NT$ 0</p><div class="mt-2 flex items-center gap-2"><span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+61%</span><span class="text-xs text-gray-400">較前年</span></div></div>
-                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">前年度累計捐款</p><p class="text-2xl font-bold text-gray-400" id="line-prev">NT$ 0</p><p class="text-xs text-gray-400 mt-2">2024 年全年</p></div>
-                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">點擊捐款轉換率</p><p class="text-2xl font-bold text-tft-blue" id="line-conv">0%</p><p class="text-xs text-gray-400 mt-2">本期平均</p></div>
+                    <div class="mb-3 flex items-center gap-2"><i class="fa-solid fa-water text-tft-blue text-xs"></i><p class="text-sm font-bold text-tft-blue tracking-widest uppercase">水位分析 · 整體捐款與去年比較</p></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">2024/09–2025/05 總捐款金額</p><p class="text-2xl font-bold text-tft-blue" id="line-total">NT$ 0</p><div class="mt-2 flex items-center gap-2"><span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-[10px]"></i>+61%</span><span class="text-xs text-gray-400">較前年</span></div></div>
+                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">2024/09–2025/05 總捐款筆數</p><p class="text-2xl font-bold text-gray-400" id="line-prev">NT$ 0</p></div>
+                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">2025/09–2026/05 總捐款金額</p><p class="text-2xl font-bold text-tft-blue" id="line-conv">0</p></div>
+                        <div class="bg-tft-blue/5 border border-tft-blue/10 rounded-xl p-5"><p class="text-xs text-gray-500 mb-1">2025/09–2026/05 總捐款筆數</p><p class="text-2xl font-bold text-tft-blue" id="line-count">0</p></div>
                     </div>
                     <div style="position:relative;height:200px;"><canvas id="chart-line" role="img"></canvas></div>
                 </div>
@@ -313,6 +314,42 @@
                 <!-- ══ Global Giving ══ -->
                 <div id="tab-content-gg" class="tab-content hidden">
                     <p class="text-xs font-bold text-tft-green tracking-widest uppercase mb-4">Global Giving · 成果總覽</p>
+                    <div class="mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-tft-blue text-xs"></i>
+                    <p class="text-sm font-bold text-tft-blue tracking-widest uppercase">平台簡介</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-gray-50 rounded-xl p-5">
+                        <p class="text-xs font-bold text-tft-blue mb-3 flex items-center gap-1.5"><i class="fa-solid fa-hand-holding-heart text-tft-yellow"></i>關於Global Giving</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-yellow mt-1.5 flex-shrink-0"></span>平台規模：累積約11億美金的募款、2百萬位捐款者</li>
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-yellow mt-1.5 flex-shrink-0"></span>平台性質：為一個幫助NGO串聯捐款者與企業的全球平台，在175+國家均有專案上線</li>
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-yellow mt-1.5 flex-shrink-0"></span>對TFT定位：海外大眾募款的重要渠道</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-5">
+                        <p class="text-xs font-bold text-tft-blue mb-3 flex items-center gap-1.5"><i class="fa-solid fa-star text-tft-yellow"></i>平台運營現況</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-green mt-1.5 flex-shrink-0"></span>
+                                <div>
+                                    <p>捐款結構：以單筆主導</p>
+                                    <ul class="mt-2 ml-4 space-y-1 list-disc text-sm text-gray-500">
+                                        <li>海外捐款人傾向單筆大額捐款</li>
+                                        <li>定期定額成長曲線平緩</li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-green mt-1.5 flex-shrink-0"></span>捐款特性：聖誕捐款氣氛濃厚</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-5">
+                        <p class="text-xs font-bold text-tft-blue mb-3 flex items-center gap-1.5"><i class="fa-solid fa-chart-line text-tft-yellow"></i>114核心策略</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-orange mt-1.5 flex-shrink-0"></span>提升定期定額捐款者，提升組織財務永續</li>
+                            <li class="flex items-start gap-2 text-sm text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-tft-orange mt-1.5 flex-shrink-0"></span>改善捐款比例分布失重問題</li>
+                        </ul>
+                    </div>
+                </div>
                     <div class="mb-3 flex items-center gap-2"><i class="fa-solid fa-book-open text-tft-blue text-xs"></i><p class="text-sm font-bold text-tft-blue tracking-widest uppercase">專案故事</p></div>
                     <p class="text-xs text-gray-400 mb-4 flex items-center gap-1"><i class="fa-solid fa-hand-pointer text-tft-yellow tap-hint"></i>點擊卡片展開完整故事內文</p>
                     <div class="space-y-3 mb-8">
@@ -489,7 +526,7 @@
 
     <footer class="bg-[#051528] py-12 px-6 text-center text-tft-cream/60 text-sm">
         <div class="max-w-2xl mx-auto space-y-4">
-            <p class="font-hand text-lg text-tft-yellow">「願我們都是守護微光的人。」</p>
+            <!-- <p class="font-hand text-lg text-tft-yellow">「願我們都是守護微光的人。」</p> -->
             <p class="font-light">Teach For Taiwan 為台灣而教 · 2026 外部關係部小額志工發表會專屬網站架構</p>
         </div>
     </footer>
@@ -639,9 +676,10 @@
         animateCount(document.getElementById('line-proj-amount'),0,46000,v=>'NT$ '+v.toLocaleString(),1200);
         animateCount(document.getElementById('line-proj-count'),0,137,v=>v+' 筆',1200);
         animateCount(document.getElementById('line-donors'),0,287,v=>v.toLocaleString()+' 人',1200);
-        animateCount(document.getElementById('line-total'),0,119000,v=>'NT$ '+v.toLocaleString(),1200);
-        animateCount(document.getElementById('line-prev'),0,74000,v=>'NT$ '+v.toLocaleString(),1200);
-        animateCount(document.getElementById('line-conv'),0,12,v=>v+'%',1200);
+        animateCount(document.getElementById('line-total'),0,108200,v=>'NT$ '+v.toLocaleString(),1200);
+        animateCount(document.getElementById('line-prev'),0,814,v=> v+' 筆'.toLocaleString(),1200);
+        animateCount(document.getElementById('line-conv'),0,145100,v=>'NT$ '+v,1200);
+        animateCount(document.getElementById('line-count'),0,759,v=> 'NT$ '+ v,1200);
     }
 
     function initGgTab(){
@@ -649,7 +687,7 @@
         animateCount(document.getElementById('gg-total'),    0,203846,v=>'USD '+v.toLocaleString(),1200);
         animateCount(document.getElementById('gg-time'),     0,63,    v=>v+' 筆',1200);
         animateCount(document.getElementById('gg-avgsingle'),0,222,   v=>'USD '+v+'.75',1200);
-        animateCount(document.getElementById('gg-monthavg'), 0,918,   v=>'USD '+v,1200);
+        animateCount(document.getElementById('gg-monthavg'), 0,1509,   v=>'USD '+v+'.7',1200);
     }
 
     function switchTab(group){
