@@ -810,37 +810,56 @@
     async function addBlessing(e){
         e.preventDefault();
 
-        const n = document.getElementById('guest-name').value.trim();
-        const msg = document.getElementById('guest-msg').value.trim();
+        const nameInput = document.getElementById('guest-name');
+        const msgInput = document.getElementById('guest-msg');
+
+        const n = nameInput.value.trim();
+        const msg = msgInput.value.trim();
 
         if(!n || !msg) return;
 
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 發送中';
 
-        try{
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 發送中';
+        }
+
+        try {
             await db.collection('blessings').add({
                 name: n,
                 message: msg,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            document.getElementById('guest-name').value = '';
-            document.getElementById('guest-msg').value = '';
+            // Firebase 成功後再清空欄位
+            nameInput.value = '';
+            msgInput.value = '';
 
-            const cont = document.getElementById('star-container');
-            cont.scrollTop = 0;
+            // 畫面效果另外保護，避免它出錯時誤判成 Firebase 失敗
+            try {
+                const cont = document.getElementById('star-container');
+                if (cont) cont.scrollTop = 0;
 
-            const ce = document.getElementById('star-count');
-            ce.classList.add('scale-110','bg-tft-yellow/30');
-            setTimeout(() => ce.classList.remove('scale-110','bg-tft-yellow/30'), 500);
-        }catch(error){
+                const ce = document.getElementById('star-count');
+                if (ce) {
+                    ce.classList.add('scale-110','bg-tft-yellow/30');
+                    setTimeout(() => {
+                        ce.classList.remove('scale-110','bg-tft-yellow/30');
+                    }, 500);
+                }
+            } catch (uiError) {
+                console.warn('留言已送出，但畫面效果更新失敗：', uiError);
+            }
+
+        } catch(error) {
             console.error('新增留言失敗：', error);
             alert('留言送出失敗，請檢查 Firebase 設定或 Firestore 規則。');
-        }finally{
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>發送';
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>發送';
+            }
         }
     }
 </script>
